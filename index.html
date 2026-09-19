@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OTP Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --color-background: #080d0b;
+      --color-surface: #0d1611;
+      --color-surface-hover: #17271e;
+      --color-border: #26392e;
+      --color-border-strong: #385443;
+      --color-text: #e6f2eb;
+      --color-text-muted: #8da096;
+      --color-accent: #00e87a;
+      --color-accent-bright: #6dffad;
+      --color-accent-soft: rgb(0 232 122 / 10%);
+      --font-body: "Outfit", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-heading: "DM Serif Display", Georgia, serif;
+      --font-mono: "DM Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --radius-small: 0.45rem;
+      --radius-medium: 0.8rem;
+      --content-width: 25rem;
+      --shadow-glow: 0 0 8rem rgb(0 232 122 / 8%);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--color-background);
+    }
+
+    body {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at 80% 0%, rgb(0 232 122 / 8%), transparent 30rem),
+        var(--color-background);
+      font-family: var(--font-body);
+      line-height: 1.6;
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      top: 12rem;
+      left: 50%;
+      width: min(42rem, 90vw);
+      height: 18rem;
+      border-radius: 50%;
+      background: var(--color-accent);
+      content: "";
+      opacity: 0.04;
+      filter: blur(7rem);
+      pointer-events: none;
+      transform: translateX(-50%);
+    }
+
+    ::selection {
+      color: var(--color-background);
+      background: var(--color-accent);
+    }
+
+    .site-header,
+    .app-shell {
+      width: min(calc(100% - 2rem), var(--content-width));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      padding: 4.5rem 0 3rem;
+    }
+
+    .eyebrow,
+    .section-number,
+    .field-label {
+      color: var(--color-accent);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+    }
+
+    .github-link:focus-visible {
+      border-color: var(--color-accent-bright);
+      color: var(--color-background);
+      background: var(--color-accent-bright);
+      transform: translateY(-1px);
+    }
+
+    .site-footer {
+      width: min(calc(100% - 2rem), var(--content-width));
+      margin-inline: auto;
+      padding-bottom: 3rem;
+      text-align: center;
+    }
+
+    .site-footer .github-link {
+      color: var(--color-text-muted);
+      background: transparent;
+      border-color: var(--color-border-strong);
+    }
+
+    .site-footer .github-link:hover,
+    .site-footer .github-link:focus-visible {
+      color: var(--color-background);
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1,
+    h2 {
+      font-family: var(--font-heading);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      max-width: none;
+      margin-bottom: 1.5rem;
+      font-size: clamp(2.5rem, 10vw, 4rem);
+      font-weight: 400;
+      line-height: 0.98;
+    }
+
+    h1 em {
+      color: var(--color-accent);
+      font-style: normal;
+    }
+
+    .lede {
+      max-width: 38rem;
+      margin-bottom: 0;
+      color: var(--color-text-muted);
+      font-size: 1.05rem;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-medium);
+      background: rgb(13 22 17 / 78%);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .panel:hover {
+      border-color: var(--color-border-strong);
+    }
+
+    .section-number {
+      margin-bottom: 0.75rem;
+      color: var(--color-text-muted);
+      font-size: 0.68rem;
+    }
+
+    h2 {
+      margin-bottom: 1.75rem;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .input-panel p {
+      margin-bottom: 1.25rem;
+    }
+
+    label:not(.field-label) {
+      display: grid;
+      gap: 0.55rem;
+      color: var(--color-text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .field-label {
+      display: block;
+      margin: -0.75rem 0 0.55rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    input,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input[type="file"],
+    input[type="password"] {
+      width: 100%;
+      min-height: 2.8rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-small);
+      color: var(--color-text);
+      background: var(--color-surface);
+    }
+
+    input[type="password"] {
+      padding: 0.65rem 0.8rem;
+    }
+
+    input[type="file"] {
+      padding: 0.25rem;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      margin-right: 0.75rem;
+      padding: 0.55rem 0.8rem;
+      border: 0;
+      border-radius: calc(var(--radius-small) - 0.1rem);
+      color: var(--color-background);
+      background: var(--color-accent);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    textarea {
+      display: block;
+      cursor: copy;
+      width: 100%;
+      height: 14rem;
+      min-height: 14rem;
+      padding: 1rem;
+      resize: vertical;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-small);
+      color: var(--color-accent-bright);
+      background: #07100b;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
+
+    button,
+    .github-link {
+      min-height: 2.8rem;
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-small);
+      color: var(--color-background);
+      background: var(--color-accent);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    button {
+      margin: 0.25rem 0.5rem 0 0;
+      cursor: pointer;
+    }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+    }
+
+    button:hover:not(:disabled),
+    .github-link:hover {
+      border-color: var(--color-accent-bright);
+      background: var(--color-accent-bright);
+      transform: translateY(-1px);
+    }
+
+    .secondary-button {
+      color: var(--color-text);
+      background: transparent;
+      border-color: var(--color-border-strong);
+    }
+
+    .secondary-button:hover:not(:disabled) {
+      color: var(--color-text);
+      background: var(--color-surface-hover);
+      border-color: var(--color-text-muted);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: wait;
+    }
+
+    input:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible,
+    .github-link:focus-visible {
+      outline: 2px solid var(--color-accent-bright);
+      outline-offset: 3px;
+    }
+
+    .info-panel {
+      grid-column: auto;
+      border-color: rgb(0 232 122 / 28%);
+      background: linear-gradient(110deg, var(--color-accent-soft), transparent 55%), var(--color-surface);
+    }
+
+    .output-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .output-heading h2 {
+      margin-bottom: 1.75rem;
+    }
+
+    .copy-button {
+      flex: 0 0 auto;
+      width: 2.4rem;
+      min-height: 2.4rem;
+      margin: -0.25rem 0 1.75rem;
+      padding: 0;
+      border-color: var(--color-border-strong);
+      color: var(--color-text);
+      background: var(--color-surface-hover);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .copy-button:hover:not(:disabled) {
+      color: var(--color-background);
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .info-panel h2 {
+      margin-bottom: 0.75rem;
+    }
+
+    .status-message {
+      min-height: 1.6em;
+      margin-bottom: 0;
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 400px) {
+      .site-header {
+        padding-top: 3rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <p class="eyebrow">LOCAL TOOL · PRIVATE BY DESIGN</p>
+    <h1>Convert your backups.<br><em>Keep control.</em></h1>
+    <p class="lede">Turn an Open Authenticator backup into a plain-text file ready for import into Ente Auth.</p>
+  </header>
+
+  <main class="app-shell">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <p class="section-number">01 / INPUT</p>
+      <h2 id="input-heading">Choose a backup</h2>
+      <form id="converter-form">
+        <p>
+          <label>
+            Backup file:
+            <input id="backup" type="file" accept=".bak,application/json">
+          </label>
+        </p>
+        <p>
+          <label>
+            Backup password:
+            <input id="password" type="password" autocomplete="off">
+          </label>
+        </p>
+        <button id="convert" type="submit">Convert</button>
+        <button id="reset" class="secondary-button" type="button">Reset</button>
+      </form>
+    </section>
+
+    <section class="panel output-panel" aria-labelledby="output-heading">
+      <p class="section-number">02 / OUTPUT</p>
+      <div class="output-heading">
+        <h2 id="output-heading">Plain-text URIs</h2>
+        <button id="copy" class="copy-button" type="button" aria-label="Copy output" title="Copy output">📋</button>
+      </div>
+      <label class="field-label" for="output">One account per line</label>
+      <textarea id="output" rows="15" readonly title="Click to copy"></textarea>
+    </section>
+
+    <section class="panel info-panel" aria-labelledby="info-heading">
+      <p class="section-number">03 / INFO</p>
+      <h2 id="info-heading">Status</h2>
+      <p id="info" class="status-message" aria-live="polite">Choose an Open Authenticator backup and enter its password.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="github-link" href="https://github.com/NKjoep/otp-converter" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">→</span></a>
+  </footer>
+
+  <script type="module">
+    import { argon2id } from 'https://cdn.jsdelivr.net/npm/hash-wasm@4.12.0/+esm';
+
+    const CONFIG = Object.freeze({
+      ivLength: 12,
+      tagLengthBytes: 16,
+      tagLengthBits: 128,
+      argon2: Object.freeze({
+        iterations: 3,
+        parallelism: 8,
+        memorySize: 4096,
+        hashLength: 32,
+        outputType: 'binary'
+      }),
+      initialMessage: 'Choose an Open Authenticator backup and enter its password.'
+    });
+
+    const dom = Object.freeze({
+      form: document.querySelector('#converter-form'),
+      backupInput: document.querySelector('#backup'),
+      passwordInput: document.querySelector('#password'),
+      convertButton: document.querySelector('#convert'),
+      resetButton: document.querySelector('#reset'),
+      copyButton: document.querySelector('#copy'),
+      output: document.querySelector('#output'),
+      info: document.querySelector('#info')
+    });
+
+    const textEncoder = new TextEncoder();
+    const textDecoder = new TextDecoder();
+    let conversionId = 0;
+
+    // -----------------------------------------------------------------------
+    // Encoding and comparison helpers
+
+    function base64ToBytes(value) {
+      const binary = atob(value);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+
+    function equalBytes(left, right) {
+      if (left.length !== right.length) return false;
+      let difference = 0;
+      for (let i = 0; i < left.length; i++) difference |= left[i] ^ right[i];
+      return difference === 0;
+    }
+
+    // -----------------------------------------------------------------------
+    // Cryptography
+
+    async function deriveRawKey(password, salt) {
+      return argon2id({
+        password,
+        salt,
+        ...CONFIG.argon2
+      });
+    }
+
+    function importAesKey(rawKey) {
+      return crypto.subtle.importKey(
+        'raw',
+        rawKey,
+        { name: 'AES-GCM' },
+        false,
+        ['decrypt']
+      );
+    }
+
+    async function createHmac(rawKey, message) {
+      const key = await crypto.subtle.importKey(
+        'raw',
+        rawKey,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signature = await crypto.subtle.sign('HMAC', key, message);
+      return new Uint8Array(signature);
+    }
+
+    async function decryptBlob(aesKey, blob) {
+      if (!Array.isArray(blob) ||
+          blob.length < CONFIG.ivLength + CONFIG.tagLengthBytes) {
+        return null;
+      }
+
+      try {
+        const bytes = new Uint8Array(blob);
+        const iv = bytes.slice(0, CONFIG.ivLength);
+        const encrypted = bytes.slice(CONFIG.ivLength);
+        const plaintext = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv, tagLength: CONFIG.tagLengthBits },
+          aesKey,
+          encrypted
+        );
+        return textDecoder.decode(plaintext);
+      } catch {
+        return null;
+      }
+    }
+
+    async function decryptWithFallback(primaryKey, fallbackKey, encryptedValue) {
+      if (encryptedValue == null) return null;
+
+      const primaryValue = await decryptBlob(primaryKey, encryptedValue);
+      if (primaryValue !== null || primaryKey === fallbackKey) return primaryValue;
+      return decryptBlob(fallbackKey, encryptedValue);
+    }
+
+    // -----------------------------------------------------------------------
+    // OTP URI conversion
+
+    function isRecord(value) {
+      return value !== null && typeof value === 'object' && !Array.isArray(value);
+    }
+
+    function validateBackup(data) {
+      if (!isRecord(data) ||
+          !Array.isArray(data.totps) ||
+          !data.totps.every(isRecord) ||
+          typeof data.salt !== 'string' ||
+          typeof data.passwordSignature !== 'string') {
+        throw new Error('This is not a valid Open Authenticator backup file.');
+      }
+    }
+
+    function isBase32(value) {
+      return /^[A-Za-z2-7]+=*$/.test(value);
+    }
+
+    function normalizeBase32(value) {
+      return isBase32(value) ? value.replace(/=+$/, '').toUpperCase() : value;
+    }
+
+    function buildUri({ label, issuer, secret, algorithm, digits, validity }) {
+      const pathLabel = issuer && label
+        ? `${issuer}:${label}`
+        : (label ?? issuer ?? 'unknown');
+      const params = [['secret', normalizeBase32(secret)]];
+
+      if (issuer) params.push(['issuer', issuer]);
+      if (algorithm) params.push(['algorithm', algorithm.toUpperCase()]);
+      if (digits) params.push(['digits', String(digits)]);
+      if (validity) params.push(['period', String(validity)]);
+
+      const query = params
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+      const encodedLabel = encodeURIComponent(pathLabel)
+        .replace(/%3A/gi, ':')
+        .replace(/%40/g, '@');
+
+      return `otpauth://totp/${encodedLabel}?${query}`;
+    }
+
+    async function createEntryKey(password, backupSalt, backupAesKey, entry) {
+      if (!Array.isArray(entry.encryptionSalt)) return backupAesKey;
+
+      const entrySalt = new Uint8Array(entry.encryptionSalt);
+      if (equalBytes(entrySalt, backupSalt)) return backupAesKey;
+
+      const entryRawKey = await deriveRawKey(password, entrySalt);
+      return importAesKey(entryRawKey);
+    }
+
+    async function convertEntry(entry, keys) {
+      const secret = await decryptWithFallback(keys.entry, keys.backup, entry.secret);
+      if (secret === null) return null;
+
+      const [label, issuer] = await Promise.all([
+        decryptWithFallback(keys.entry, keys.backup, entry.label),
+        decryptWithFallback(keys.entry, keys.backup, entry.issuer)
+      ]);
+
+      return buildUri({
+        label,
+        issuer,
+        secret,
+        algorithm: typeof entry.algorithm === 'string' ? entry.algorithm : null,
+        digits: typeof entry.digits === 'number' ? entry.digits : null,
+        validity: typeof entry.validity === 'number' ? entry.validity : null
+      });
+    }
+
+    async function convertBackup(data, password) {
+      validateBackup(data);
+
+      const backupSalt = base64ToBytes(data.salt);
+      const passwordBytes = textEncoder.encode(password);
+      const backupRawKey = await deriveRawKey(passwordBytes, backupSalt);
+      const actualSignature = await createHmac(backupRawKey, passwordBytes);
+      const expectedSignature = base64ToBytes(data.passwordSignature);
+
+      if (!equalBytes(actualSignature, expectedSignature)) {
+        throw new Error('Invalid backup password.');
+      }
+
+      const backupAesKey = await importAesKey(backupRawKey);
+      const lines = [];
+      let failed = 0;
+
+      for (const entry of data.totps) {
+        const entryAesKey = await createEntryKey(
+          passwordBytes,
+          backupSalt,
+          backupAesKey,
+          entry
+        );
+        const uri = await convertEntry(
+          entry,
+          { backup: backupAesKey, entry: entryAesKey }
+        );
+
+        if (uri === null) failed++;
+        else lines.push(uri);
+      }
+
+      return { lines, failed };
+    }
+
+    // -----------------------------------------------------------------------
+    // User interface
+
+    function setBusy(isBusy) {
+      dom.convertButton.disabled = isBusy;
+      dom.resetButton.disabled = isBusy;
+    }
+
+    function resetForm() {
+      conversionId++;
+      dom.backupInput.value = '';
+      dom.passwordInput.value = '';
+      dom.output.value = '';
+      dom.info.textContent = CONFIG.initialMessage;
+      setBusy(false);
+    }
+
+    async function writeToClipboard(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      dom.output.focus();
+      dom.output.select();
+      if (!document.execCommand('copy')) throw new Error('Copy failed');
+    }
+
+    async function copyOutput() {
+      const text = dom.output.value;
+      const requestId = conversionId;
+
+      if (!text) {
+        dom.info.textContent = 'There is nothing to copy yet.';
+        return;
+      }
+
+      try {
+        await writeToClipboard(text);
+        if (requestId === conversionId) dom.info.textContent = 'Output copied to the clipboard.';
+      } catch {
+        if (requestId === conversionId) {
+          dom.info.textContent = 'Could not copy the output. Select it and copy it manually.';
+        }
+      }
+    }
+
+    function errorMessage(error) {
+      return error instanceof Error ? error.message : 'Conversion failed.';
+    }
+
+    async function handleConvert(event) {
+      event.preventDefault();
+      const file = dom.backupInput.files[0];
+      const password = dom.passwordInput.value;
+
+      dom.output.value = '';
+      if (!file) {
+        dom.info.textContent = 'Choose a backup file first.';
+        return;
+      }
+      if (!password) {
+        dom.info.textContent = 'Enter the backup password first.';
+        return;
+      }
+
+      const requestId = ++conversionId;
+      setBusy(true);
+      dom.info.textContent = 'Converting...';
+
+      try {
+        const data = JSON.parse(await file.text());
+        const result = await convertBackup(data, password);
+        if (requestId !== conversionId) return;
+
+        dom.output.value = result.lines.join('\n') +
+          (result.lines.length ? '\n' : '');
+        dom.info.textContent = `${result.lines.length} account(s) converted` +
+          (result.failed ? `; ${result.failed} account(s) could not be decrypted.` : '.');
+      } catch (error) {
+        if (requestId === conversionId) dom.info.textContent = `Error: ${errorMessage(error)}`;
+      } finally {
+        if (requestId === conversionId) setBusy(false);
+      }
+    }
+
+    dom.form.addEventListener('submit', handleConvert);
+    dom.resetButton.addEventListener('click', resetForm);
+    dom.copyButton.addEventListener('click', copyOutput);
+    dom.output.addEventListener('click', copyOutput);
+    window.addEventListener('pagehide', resetForm);
+    window.addEventListener('pageshow', resetForm);
+  </script>
+</body>
+</html>

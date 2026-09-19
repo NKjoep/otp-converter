@@ -1,0 +1,16 @@
+{
+  "name": "otp-converter",
+  "version": "1.0.0",
+  "description": "Converts Open Authenticator backups to plain text files. Works with the Open Authenticator app: https://github.com/openauthenticator-app/openauthenticator",
+  "license": "MIT",
+  "author": "Andrea Dessì",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "hash-wasm": "^4.12.0"
+  },
+  "devDependencies": {}
+}
